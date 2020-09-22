@@ -18,7 +18,7 @@ class MyNavbar extends React.Component{
                 </div>
                 <div className="list-group list-group-flush">
                     {
-                        url === prodUrl?
+                        url.substr(url.length - 4).includes('com')?
                         <Link className='list-group-item list-group-item-action bg-light' to="/" style={{borderRight:'10px solid #3d3d3d'}} >Data Collection</Link>
                         :
                         <Link className='list-group-item list-group-item-action bg-light' to="/" >Data Collection</Link>
