@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import './MyNavbar.css';
 
 const devUrl = '';
-const prodUrl = 'https://wildfire-flask-backend.herokuapp.com/';
+const prodUrl = 'https://wildfire-flask-backend.herokuapp.com';
 
 class MyNavbar extends React.Component{
     render(){        
