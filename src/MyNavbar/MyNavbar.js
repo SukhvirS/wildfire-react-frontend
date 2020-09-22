@@ -2,6 +2,9 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import './MyNavbar.css';
 
+const devUrl = '';
+const prodUrl = 'https://wildfire-flask-backend.herokuapp.com/';
+
 class MyNavbar extends React.Component{
     render(){        
         var url = window.location.href;
@@ -15,7 +18,7 @@ class MyNavbar extends React.Component{
                 </div>
                 <div className="list-group list-group-flush">
                     {
-                        url === 'http://localhost:3000/'?
+                        url === prodUrl?
                         <Link className='list-group-item list-group-item-action bg-light' to="/" style={{borderRight:'10px solid #3d3d3d'}} >Data Collection</Link>
                         :
                         <Link className='list-group-item list-group-item-action bg-light' to="/" >Data Collection</Link>
