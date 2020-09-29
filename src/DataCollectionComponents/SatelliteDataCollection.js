@@ -3,7 +3,7 @@ import CountySelector from '../CountySelector';
 import { MDBDataTable } from 'mdbreact';
 
 const devUrl = '';
-const prodUrl = 'https://wildfire-flask-backend.herokuapp.com/';
+const prodUrl = 'https://wildfire-flask-backend.herokuapp.com';
 
 class SatelliteDataCollection extends React.Component{
 

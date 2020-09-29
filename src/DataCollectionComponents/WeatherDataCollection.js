@@ -4,7 +4,7 @@ import { MDBDataTable } from 'mdbreact';
 import CountySelector from '../CountySelector';
 
 const devUrl = '';
-const prodUrl = 'https://wildfire-flask-backend.herokuapp.com/';
+const prodUrl = 'https://wildfire-flask-backend.herokuapp.com';
 
 class WeatherDataCollection extends React.Component{
 
