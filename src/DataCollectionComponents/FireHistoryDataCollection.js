@@ -103,7 +103,7 @@ class FireHistoryDataCollection extends React.Component{
 
         var features = ['OBJECTID', 'STATE_NAME', 'COUNTY_NAME', 'DISCOVER_YEAR', 'POO_LATITUDE', 'POO_LONGITUDE', 'FIRE_SIZE_CLASS']
 
-        fetch(devUrl + '/api/getUSDAFireData', {
+        fetch(prodUrl + '/api/getUSDAFireData', {
             method: "POST",
             body: JSON.stringify({
                 startYear: startYear,

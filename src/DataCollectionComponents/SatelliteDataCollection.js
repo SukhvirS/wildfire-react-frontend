@@ -95,65 +95,12 @@ class SatelliteDataCollection extends React.Component{
 
     }
 
-    // getUSGSdata(start, end){
-    //     var lat = this.state.lat;
-    //     var lon = this.state.lon;
-
-    //     var resultElement = document.getElementById('resultTable');
-    //     resultElement.innerHTML = 'Getting Data ...';
-        
-    //     fetch(devUrl + '/api/getEarthExplorerData', {
-    //         method: "POST",
-    //         body: JSON.stringify({
-    //             lat: lat,
-    //             lon: lon,
-    //             startDate: start,
-    //             endDate: end,
-    //         })
-    //     })
-    //     .then(res => res.json())
-    //     .then(data => {
-    //         var scenes = data['scenes'];
-    //         var dataLength = data['totalDataLength'];
-
-    //         var columnsToDisplay = ['startTime', 'endTime', 'acquisitionDate', 'cloudCover', 'displayId', 'entityId']
-
-    //         var table = '';
-    //         table = `
-    //         <div class='table-responsive'>
-    //             <table class="table table-bordered">
-    //                 <thead>
-    //                     <tr>
-    //                         <th scope="col">#</th>`;
-    //         for(const col of columnsToDisplay){
-    //             table += `<th score='col'>` + col + '</th>'
-    //         }
-    //         table += '</tr> </thead> <tbody>';
-    //         var i = 0;
-    //         for(var currentScene in scenes){
-    //             table += '<tr> <th scope="row">'+i+'</th>'; 
-    //             for(var col of columnsToDisplay){
-    //                 table += '<td>' + scenes[currentScene][col] + '</td>';
-    //             }
-    //             table += '</tr>';
-    //             i += 1;
-    //         }
-    //         table += '</tbody> </table> </div>';
-    //         resultElement.innerHTML = table;
-
-    //         var tableHeaderElement = document.getElementById('tableHeader');
-    //         if(tableHeaderElement != null){
-    //             tableHeaderElement.innerHTML = 'Data from <strong>'+start+'</strong> - <strong>'+end+'</strong> for <strong>'+this.state.currentCounty+'</strong> county';
-    //         }
-
-    //     })
-    // }
 
     getUSGSdata(start, end){
         var lat = this.state.lat;
         var lon = this.state.lon;
 
-        fetch(devUrl + '/api/getEarthExplorerData', {
+        fetch(prodUrl + '/api/getEarthExplorerData', {
             method: "POST",
             body: JSON.stringify({
                 lat: lat,
