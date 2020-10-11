@@ -109,7 +109,7 @@ class SatelliteDataCollection extends React.Component{
         var lat = this.state.lat;
         var lon = this.state.lon;
 
-        fetch(devUrl + '/api/getEarthExplorerData', {
+        fetch(prodUrl + '/api/getEarthExplorerData', {
             method: "POST",
             body: JSON.stringify({
                 lat: lat,
