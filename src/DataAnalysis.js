@@ -1,6 +1,6 @@
 import React from 'react';
-import MyNavbar from './MyNavbar/MyNavbar';
-import {Map, GeoJSON, TileLayer, LayersControl, FeatureGroup, Marker, Popup, Circle} from 'react-leaflet';
+import MyNavbar from './Components/MyNavbar/MyNavbar';
+import {Map, GeoJSON, TileLayer, LayersControl} from 'react-leaflet';
 import counties from './counties.json';
 
 class DataAnalysis extends React.Component{

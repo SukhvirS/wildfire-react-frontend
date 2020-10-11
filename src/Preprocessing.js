@@ -1,5 +1,5 @@
 import React from 'react';
-import MyNavbar from './MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar/MyNavbar';
 
 class Preprocessing extends React.Component{
     render(){

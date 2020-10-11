@@ -1,8 +1,8 @@
 import React from 'react';
-import {Map, GeoJSON, TileLayer, LayersControl, FeatureGroup, Marker, Popup, Circle} from 'react-leaflet';
+import {Map, GeoJSON, TileLayer, LayersControl} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import counties from './counties.json';
-import MyNavbar from './MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar/MyNavbar';
 
 class Risk extends React.Component{
 

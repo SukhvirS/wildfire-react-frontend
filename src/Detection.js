@@ -1,9 +1,9 @@
 import React from 'react';
-import {Map, GeoJSON, TileLayer, LayersControl, FeatureGroup, Marker, Popup, Circle, LayerGroup} from 'react-leaflet';
+import {Map, GeoJSON, TileLayer, LayersControl, FeatureGroup, Marker, Popup} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import counties from './counties.json';
 import L from 'leaflet';
-import MyNavbar from './MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar/MyNavbar';
 
 class Detection extends React.Component{
 

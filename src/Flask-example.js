@@ -1,5 +1,5 @@
 import React from 'react';
-import MyNavbar from './MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar/MyNavbar';
 
 const devUrl = '';
 const prodUrl = 'https://wildfire-flask-backend.herokuapp.com/';

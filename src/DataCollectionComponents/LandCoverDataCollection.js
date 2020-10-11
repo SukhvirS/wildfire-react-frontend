@@ -1,5 +1,9 @@
 import React from 'react';
-import CountySelector from '../CountySelector';
+import CountySelector from '../Components/CountySelector';
+import {Map, TileLayer, LayersControl} from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import MarkerClusterGroup from "react-leaflet-markercluster";
 
 class LandCoverDataCollection extends React.Component{
 
@@ -11,6 +15,9 @@ class LandCoverDataCollection extends React.Component{
             lat: props.lat,
             lon: props.lon,
             currentCounty: 'Almeda',
+            data: null,
+            currentView: 'Table View',
+            currentMarker: null,
         }
 
         this.getData = this.getData.bind(this);
@@ -18,6 +25,7 @@ class LandCoverDataCollection extends React.Component{
         this.formatDate = this.formatDate.bind(this);
         this.toggleFilterDiv = this.toggleFilterDiv.bind(this);
         this.changeCounty = this.changeCounty.bind(this);
+        this.handleViewChange = this.handleViewChange.bind(this);
 
     }
 
@@ -89,19 +97,9 @@ class LandCoverDataCollection extends React.Component{
 
     }
 
-
     getUSGSdata(start, end){
         var lat = this.state.lat;
         var lon = this.state.lon;
-
-        var resultElement = document.getElementById('resultTable');
-        resultElement.innerHTML = 'API not implemented yet';
-
-
-        var tableHeaderElement = document.getElementById('tableHeader');
-        if(tableHeaderElement != null){
-            tableHeaderElement.innerHTML = 'Data from <strong>'+start+'</strong> - <strong>'+end+'</strong>';
-        }
 
     }
 
@@ -121,14 +119,34 @@ class LandCoverDataCollection extends React.Component{
         })
     }
 
+    handleViewChange(event){
+        console.log('changed to: '+event.target.innerHTML);
+        this.setState({
+            currentView: event.target.innerHTML,
+        })
+    }
 
     render(){
+
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+            iconUrl: require('leaflet/dist/images/marker-icon.png'),
+            shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+        });
+
         return(
-            <div className="jumbotron" style={{margin:'10px 0 50px 0', paddingTop:'20px'}}>
+            <div className="jumbotron" style={{margin:'10px 0 50px 0', paddingTop:'20px', overflow:'auto'}}>
                 <div style={{width:'100%', height:'50px'}}>
-                    <h4 style={{padding:'0 10px 0 0', float:'left', padding:'12px 0 0 0'}}>
+                    <h4 style={{padding:'12px 10px 0 0', float:'left'}}>
                         Land Cover
                     </h4>
+                    {
+                        this.state.currentView === 'Table View'?
+                        <button className='btn btn-success' onClick={this.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Map View</button>
+                        :
+                        <button className='btn btn-success' onClick={this.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Table View</button>
+                    }
                     <button className='btn btn-dark' style={{float:'right'}} onClick={this.toggleFilterDiv}>
                         Filter 
                         &nbsp;
@@ -162,25 +180,103 @@ class LandCoverDataCollection extends React.Component{
                             County: &nbsp;&nbsp;
                             <CountySelector parentCallback={this.changeCounty}/>
                         </div>
+                        <button className='btn btn-primary' onClick={this.getData} style={{float:'right', marginRight:'16px'}}>
+                            Get Data
+                        </button>
                     </div>
                     <br/>
                     <br/>
-                    <br/>
-                    <button className='btn btn-primary' onClick={this.getData} style={{margin:'0 auto', display:'block'}}>Get Data</button>
                     <hr/>
                 </div>
                 <div>
-                    <div>
-                        <div id='dataResult'>
-                            <div id='tableHeader'></div>
-                            <br/>
-                            <div id='resultTable'></div>
+                    {
+                        this.state.currentView === 'Table View'?
+                        <div>
+                            {
+                                !this.state.data?
+                                <div>API not implemented yet</div>
+                                :
+                                <div></div>
+                            }
                         </div>
-                        <p id='dataTotalRows'></p>
-                    </div>
+                        :
+                        <div>
+                            <Map style={{height:'calc(100vh - 200px)', width:'calc(100vw - 600px)', border:'1px solid black', float:'left'}} zoom={6} center={[this.state.lat, this.state.lon]}>
+                                <LayersControl position="topright">
+
+                                    <LayersControl.BaseLayer name="Topology" checked>
+                                        <TileLayer
+                                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}.png"
+                                        />
+                                    </LayersControl.BaseLayer>
+
+                                    <LayersControl.BaseLayer name="Street">
+                                        <TileLayer
+                                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        />
+                                    </LayersControl.BaseLayer>
+
+                                    <LayersControl.BaseLayer name="Satellite">
+                                        <TileLayer
+                                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png"
+                                        />
+                                    </LayersControl.BaseLayer>
+
+                                    <LayersControl.BaseLayer name="Terrain">
+                                        <TileLayer
+                                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}.png"
+                                        />
+                                    </LayersControl.BaseLayer>
+
+                                    <LayersControl.BaseLayer name="Dark">
+                                        <TileLayer
+                                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+                                        />
+                                    </LayersControl.BaseLayer>
+
+                                </LayersControl>
+
+                                <MarkerClusterGroup>
+                                    {
+                                        this.state.data == null?
+                                        <div>Waiting for data to load...</div>
+                                        :
+                                        <div></div>
+                                    }
+                                </MarkerClusterGroup>
+                            </Map>
+                            <div style={{float:'right', padding:'6px', width:'230px'}}>
+                            {
+                                this.state.currentMarker == null?
+                                <h3>Select a marker for more info.</h3>
+                                :
+                                <div>
+                                    <h3>Marker Information</h3>
+                                    <hr/>
+                                    {
+                                        this.state.features.map(
+                                            feature => {
+                                                return (
+                                                <div>
+                                                    <strong>{feature}: </strong>{this.state.currentMarker[feature]}
+                                                    <br/>
+                                                    </div>
+                                                )
+                                            }
+                                        )
+                                    }
+                                </div>
+                            }
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
-
         );
     }
 }

@@ -1,8 +1,8 @@
 import React from 'react';
-import {Map, GeoJSON, TileLayer, LayersControl, FeatureGroup, Marker, Popup, Circle} from 'react-leaflet';
+import {Map, GeoJSON, TileLayer, LayersControl} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import counties from './counties.json';
-import MyNavbar from './MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar/MyNavbar';
 
 class Progression extends React.Component{
 
@@ -42,7 +42,7 @@ class Progression extends React.Component{
     }
 
     onEachCounty(county, layer){
-        var countyName = county.properties.name;
+        // var countyName = county.properties.name;
         // layer.bindPopup(countyName);
 
         layer.on({
@@ -57,7 +57,7 @@ class Progression extends React.Component{
 
         var hours = Math.floor(sliderValue / 60 / 60);
         var minutes = Math.floor(sliderValue / 60) - (hours * 60);
-        var seconds = sliderValue % 60;
+        // var seconds = sliderValue % 60;
 
         var timeFromNow = '';
 

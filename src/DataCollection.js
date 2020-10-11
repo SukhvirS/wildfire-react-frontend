@@ -1,5 +1,5 @@
 import React from 'react';
-import MyNavbar from './MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar/MyNavbar';
 
 import WeatherDataCollection from './DataCollectionComponents/WeatherDataCollection';
 import SatelliteDataCollection from './DataCollectionComponents/SatelliteDataCollection';
@@ -152,18 +152,6 @@ class DataCollection extends React.Component{
                                 :
                                 <div></div>
                             }
-
-                            <div style={{display:'flex', justifyContent:'center', flexWrap:'wrap'}}>
-                                <a href='https://earthexplorer.usgs.gov/' target='_blank' rel="noopener noreferrer" style={{margin:'20px 0 0 0'}}>
-                                    <img src='https://upload.wikimedia.org/wikipedia/commons/0/08/USGS_logo.png' alt='USGS' width='150px'/>
-                                </a>
-                                <a href='https://landsat.gsfc.nasa.gov/' target='_blank' rel="noopener noreferrer"style={{margin:'0 5vw 0 10vw'}}>
-                                    <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/NASA_Wormball_logo.svg/1200px-NASA_Wormball_logo.svg.png' alt='NASA' width='100px'/>
-                                </a>
-                                <a href='https://developers.google.com/earth-engine/datasets/catalog/landsat-8' target='_blank' rel="noopener noreferrer" style={{margin:'20px 0 0 0'}}>
-                                    <img src='https://earthengine.google.com/static/images/GoogleEarthEngine_Grey_108.png' alt='Google Earth Engine' width='300px'/>
-                                </a>
-                            </div>
                             
                         </div>
                     </div>
