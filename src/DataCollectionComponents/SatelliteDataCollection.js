@@ -5,6 +5,7 @@ import {Map, TileLayer, LayersControl, Marker, Popup} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
+import FilterDiv from '../Components/FilterDiv';
 
 const devUrl = '';
 const prodUrl = 'https://wildfire-flask-backend.herokuapp.com';
@@ -109,7 +110,7 @@ class SatelliteDataCollection extends React.Component{
         var lat = this.state.lat;
         var lon = this.state.lon;
 
-        fetch(prodUrl + '/api/getEarthExplorerData', {
+        fetch(devUrl + '/api/getEarthExplorerData', {
             method: "POST",
             body: JSON.stringify({
                 lat: lat,
@@ -212,57 +213,14 @@ class SatelliteDataCollection extends React.Component{
 
         return(
             <div className="jumbotron" style={{margin:'10px 0 50px 0', paddingTop:'20px', overflow:'auto'}}>
-                <div style={{width:'100%', height:'50px'}}>
-                    <h4 style={{padding:'12px 10px 0 0', float:'left'}}>
-                        Satellite
-                    </h4>
-                    {
-                        this.state.currentView === 'Table View'?
-                        <button className='btn btn-success' onClick={this.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Map View</button>
-                        :
-                        <button className='btn btn-success' onClick={this.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Table View</button>
-                    }
-                    <button className='btn btn-dark' style={{float:'right'}} onClick={this.toggleFilterDiv}>
-                        Filter 
-                        &nbsp;
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-filter" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd" d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
-                        </svg>
-                    </button>
-                </div>
-                <hr/>
-                <div style={{display:'none', height:'auto'}} id='filterDiv'>
-                    <div style={{width:'100%'}}>
-                        <div style={{float:'left'}}>
-                            Source: &nbsp;&nbsp;
-                            <select id="dataSourceInput" style={{padding:'14px'}}>
-                                <option value='USGS'>USGS</option>
-                            </select>
-                        </div>
-                        <div style={{float:'right'}}>
-                            From:&nbsp;
-                            <input type='date' style={{padding:'10px'}} id="startDateInput"/>
-                            &nbsp; - &nbsp;
-                            <input type='date' style={{padding:'10px'}} id='endDateInput'/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                        </div>
-                        <br/>
-                        <br/>
-                        <br/>
-                    </div>
-                    <div style={{width:'100%'}}>
-                        <div style={{float:'left'}}>
-                            County: &nbsp;&nbsp;
-                            <CountySelector parentCallback={this.changeCounty}/>
-                        </div>
-                        <button className='btn btn-primary' onClick={this.getData} style={{float:'right', marginRight:'16px'}}>
-                            Get Data
-                        </button>
-                    </div>
-                    <br/>
-                    <br/>
-                    <hr/>
-                </div>
+                <FilterDiv 
+                    dataType='satellite'
+                    getData={this.getData}
+                    changeCounty={this.changeCounty}
+                    toggleFilterDiv={this.toggleFilterDiv}
+                    currentView={this.state.currentView}
+                    handleViewChange={this.handleViewChange}
+                />
                 <div>
                     <div>
                         {

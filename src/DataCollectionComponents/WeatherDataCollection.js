@@ -6,6 +6,8 @@ import {Map, TileLayer, LayersControl} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import MarkerClusterGroup from "react-leaflet-markercluster";
+import Plot from 'react-plotly.js';
+import FilterDiv from '../Components/FilterDiv';
 
 const devUrl = '';
 const prodUrl = 'https://wildfire-flask-backend.herokuapp.com';
@@ -78,6 +80,8 @@ class WeatherDataCollection extends React.Component{
 
 
     getData(){
+        // document.getElementById('gettingData').style.display = '';
+
         var startDate = document.getElementById('startDateInput').value;
         var endDate = document.getElementById('endDateInput').value;
 
@@ -102,11 +106,10 @@ class WeatherDataCollection extends React.Component{
         if(this.state.source === 'NOAA'){
             this.getNOAAdata(startDate, endDate);
         }
-
     }
 
     getNOAAdata(start, end){
-        fetch(prodUrl + '/api/getNOAAdata', {
+        fetch(devUrl + '/api/getNOAAdata', {
             method:'POST',
             body: JSON.stringify({
                 startDate: start,
@@ -151,6 +154,8 @@ class WeatherDataCollection extends React.Component{
             this.setState({
                 data: data,
             })
+
+            // document.getElementById('gettingData').style.display = 'none';
         })
     }
 
@@ -186,60 +191,31 @@ class WeatherDataCollection extends React.Component{
             shadowUrl: require('leaflet/dist/images/marker-shadow.png')
         });
 
+        var dates = [];
+        var tavg = [];
+        var tmax = [];
+        var tmin = [];
+        if(this.state.data != null){
+            for(var row of this.state.data['rows']){
+                dates.push(row['DATE']);
+                tavg.push(row['TAVG']);
+                tmax.push(row['TMAX']);
+                tmin.push(row['TMIN']);
+            }
+        }
+
         return(
             <div className="jumbotron" style={{margin:'10px 0 50px 0', paddingTop:'20px', overflow:'auto'}}>
-                <div style={{width:'100%', height:'50px'}}>
-                    <h4 style={{padding:'12px 10px 0 0', float:'left'}}>
-                        Weather
-                    </h4>
-                    {
-                        this.state.currentView === 'Table View'?
-                        <button className='btn btn-success' onClick={this.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Map View</button>
-                        :
-                        <button className='btn btn-success' onClick={this.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Table View</button>
-                    }
-                    <button className='btn btn-dark' style={{float:'right'}} onClick={this.toggleFilterDiv}>
-                        Filter 
-                        &nbsp;
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-filter" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd" d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
-                        </svg>
-                    </button>
-                </div>
-                <hr/>
-                <div style={{display:'none', overflow:'auto'}} id='filterDiv'>
-                    <div style={{width:'100%'}}>
-                        <div style={{float:'left'}}>
-                            Source: &nbsp;&nbsp;
-                            <select id="dataSourceInput" style={{padding:'14px'}}>
-                                <option value='NOAA'>NOAA</option>
-                            </select>
-                        </div>
-                        <div style={{float:'right'}}>
-                            From:&nbsp;
-                            <input type='date' style={{padding:'10px'}} id="startDateInput"/>
-                            &nbsp; - &nbsp;
-                            <input type='date' style={{padding:'10px'}} id='endDateInput'/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                        </div>
-                        <br/>
-                        <br/>
-                        <br/>
-                    </div>
-                    <div style={{width:'100%'}}>
-                        <div style={{float:'left'}}>
-                            County: &nbsp;&nbsp;
-                            <CountySelector parentCallback={this.changeCounty}/>
-                        </div>
-                        <button className='btn btn-primary' onClick={this.getData} style={{float:'right', marginRight:'16px'}}>
-                            Get Data
-                        </button>
-                    </div>
-                    <br/>
-                    <br/>   
-                    <hr/>
-                </div>
+                <FilterDiv 
+                    dataType='weather'
+                    getData={this.getData}
+                    changeCounty={this.changeCounty}
+                    toggleFilterDiv={this.toggleFilterDiv}
+                    currentView={this.state.currentView}
+                    handleViewChange={this.handleViewChange}
+                />
                 <div>
+                    <h3 id='gettingData' style={{display:'none', margin:'10px 0 40px 0'}}>Getting data...</h3>
                     {
                         this.state.currentView === 'Table View'?
                         <div>
@@ -247,11 +223,56 @@ class WeatherDataCollection extends React.Component{
                                 !this.state.data?
                                 <div>Getting data...</div>
                                 :
-                                <MDBDataTable responsive
-                                striped
-                                bordered
-                                data={this.state.data}
-                                />
+                                <div>
+                                    <MDBDataTable responsive
+                                    striped
+                                    bordered
+                                    data={this.state.data}
+                                    />
+                                    <br/>
+                                    <hr/>
+
+                                    <h4>Graphs</h4>
+                                    <br/>
+                                    <Plot
+                                        style={{width:'100%', height:'400px'}}
+                                        data = {[
+                                            {
+                                                x: dates,
+                                                y: tavg,
+                                                type: 'line'
+                                            }
+                                        ]}
+                                        layout={{ title: 'TAVG over time'}}
+                                    />
+                                    <br/>
+                                    <div>
+                                        <Plot
+                                            style={{float:'left', width:'49%', height:'300px'}}
+                                            data={[
+                                                {
+                                                    x: dates,
+                                                    y: tmin,
+                                                    type: 'line',
+                                                }
+                                            ]}
+                                            layout={{ title: 'TMIN over time' }}
+                                        />
+                                        <Plot
+                                            style={{float:'right', width:'49%', height:'300px'}}
+                                            data={[
+                                                {
+                                                    x: dates,
+                                                    y: tmax,
+                                                    type:'line'
+                                                }
+                                            ]}
+                                            layout={{ title:'TMAX over time' }}
+                                        />
+                                    </div>
+
+                                </div>
+                                
                             }
                         </div>
                         :

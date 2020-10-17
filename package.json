@@ -12,10 +12,12 @@
     "mdbreact": "^4.27.0",
     "node-fetch": "^2.6.1",
     "node-forge": "^0.10.0",
+    "plotly.js": "^1.56.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-leaflet": "^2.7.0",
     "react-leaflet-markercluster": "^2.0.0",
+    "react-plotly.js": "^2.5.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "websocket-extensions": "^0.1.4"
