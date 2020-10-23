@@ -214,6 +214,7 @@ class SatelliteDataCollection extends React.Component{
         return(
             <div className="jumbotron" style={{margin:'10px 0 50px 0', paddingTop:'20px', overflow:'auto'}}>
                 <FilterDiv 
+                    pageType='dataCollection'
                     dataType='satellite'
                     getData={this.getData}
                     changeCounty={this.changeCounty}

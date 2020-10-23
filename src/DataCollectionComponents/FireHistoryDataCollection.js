@@ -203,7 +203,8 @@ class FireHistoryDataCollection extends React.Component{
 
         return(
             <div className="jumbotron" style={{margin:'10px 0 50px 0', paddingTop:'20px', overflow:'auto'}}>
-                <FilterDiv 
+                <FilterDiv
+                    pageType='dataCollection' 
                     dataType='fireHistory'
                     getData={this.getData}
                     changeCounty={this.changeCounty}

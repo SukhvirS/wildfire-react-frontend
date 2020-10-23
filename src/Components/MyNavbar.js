@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import './MyNavbar.css';
+import '../css/MyNavbar.css';
 
 const devUrl = '';
 const prodUrl = 'https://wildfire-flask-backend.herokuapp.com';
@@ -59,12 +59,12 @@ class MyNavbar extends React.Component{
                         :
                         <Link className='list-group-item list-group-item-action bg-light' to="/model-evaluation" >Model Evaluation</Link>
                     }
-                    {
+                    {/* {
                         url.includes('flask')?
                         <Link className='list-group-item list-group-item-action bg-light' to="/flask" style={{borderRight:'10px solid #3d3d3d'}}>Flask examples</Link>
                         :
                         <Link className='list-group-item list-group-item-action bg-light' to="/flask" >Flask examples</Link>
-                    }
+                    } */}
                 </div>
             </div>
         </div>

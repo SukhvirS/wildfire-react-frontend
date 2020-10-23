@@ -54,7 +54,7 @@ class CountySelector extends React.Component{
                 <option value='San Benito'>San Benito</option>
                 <option value='San Bernadino'>San Bernadino</option>
                 <option value='San Diego'>San Diego</option>
-                <option value='San Fransisco'>San Fransisco</option>
+                <option value='San Francisco'>San Francisco</option>
                 <option value='San Joaquin'>San Joaquin</option>
                 <option value='San Luis Obispo'>San Luis Obispo</option>
                 <option value='San Mateo'>San Mateo</option>

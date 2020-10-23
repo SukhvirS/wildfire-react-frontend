@@ -2,7 +2,7 @@ import React from 'react';
 import {Map, GeoJSON, TileLayer, LayersControl} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import counties from './counties.json';
-import MyNavbar from './Components/MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar';
 
 class Progression extends React.Component{
 

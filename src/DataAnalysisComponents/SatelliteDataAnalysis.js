@@ -13,40 +13,38 @@ import counties from '../counties.json';
 const devUrl = '';
 const prodUrl = 'https://wildfire-flask-backend.herokuapp.com';
 
-class WeatherDataCollection extends React.Component{
+class SatelliteDataAnalysis extends React.Component{
 
     constructor(props){
         super(props);
         
         this.state = {
-            source: 'NOAA',
+            source: 'USGS',
+            currentCounty: 'Almeda',
             lat: props.lat,
             lon: props.lon,
-            currentCounty: 'Almeda',
             data: null,
-            currentView: 'Table View',
-            currentMarker: null,
-            weatherStationData: null,
-            currentWeatherStation: null,
-            weatherStationFeatures: ['datacoverage', 'elevation', 'elevationUnit', 'id', 'latitude', 'longitude', 'maxdate', 'mindate', 'name'],
+            currentView: 'Statistic View',
             startDate: null,
             endDate: null,
-
+            features: ['startTime', 'endTime', 'acquisitionDate', 'cloudCover', 'displayId', 'entityId', 'latitude', 'longitude'],
+            summaryData: {
+                'Avg fires per year': '8',
+                'Biggest fire': '2,600 acres',
+                'Smallest fire': '20 acres',
+                
+            },
         }
 
-        this.getData = this.getData.bind(this);
-        this.getNOAAdata = this.getNOAAdata.bind(this);
         this.formatDate = this.formatDate.bind(this);
-        this.changeCounty = this.changeCounty.bind(this);
-        this.toggleFilterDiv = this.toggleFilterDiv.bind(this);
+        this.getData = this.getData.bind(this);
+        this.getUSGSdata = this.getUSGSdata.bind(this);
         this.handleViewChange = this.handleViewChange.bind(this);
-        this.handleWeatherStationChange = this.handleWeatherStationChange.bind(this);
-        this.onCountyMouseout = this.onCountyMouseout.bind(this);
-        this.onCountyMouseover = this.onCountyMouseover.bind(this);
-        this.onEachCounty = this.onEachCounty.bind(this);
-        this.getFeatureData = this.getFeatureData.bind(this);
+        this.toggleFilterDiv = this.toggleFilterDiv.bind(this);
+        this.changeCounty = this.changeCounty.bind(this);
         this.handleStartDateChange = this.handleStartDateChange.bind(this);
         this.handleEndDateChange = this.handleEndDateChange.bind(this);
+
     }
 
     componentDidMount(){
@@ -76,10 +74,8 @@ class WeatherDataCollection extends React.Component{
             endDate: today,
         })
 
-        this.getNOAAdata(monthAgo, today);
-
+        this.getUSGSdata(monthAgo, today);
     }
-
 
     formatDate(date) {
         var d = new Date(date),
@@ -94,7 +90,6 @@ class WeatherDataCollection extends React.Component{
     
         return [year, month, day].join('-');
     }
-
 
     getData(){
         var startDate = document.getElementById('startDateInput').value;
@@ -118,58 +113,63 @@ class WeatherDataCollection extends React.Component{
             return;
         }
 
-        if(this.state.source === 'NOAA'){
-            this.getNOAAdata(startDate, endDate);
+        if(this.state.source === 'USDA'){
+            this.getUSGSdata(startDate, endDate);
         }
+
     }
 
-    getNOAAdata(start, end){
-        this.setState({
-            data: null,
-        })
+    getUSGSdata(start, end){
+        var lat = this.state.lat;
+        var lon = this.state.lon;
 
-        fetch(devUrl + '/api/getNOAAdata', {
-            method:'POST',
+        fetch(devUrl + '/api/getEarthExplorerData', {
+            method: "POST",
             body: JSON.stringify({
+                lat: lat,
+                lon: lon,
                 startDate: start,
                 endDate: end,
-                county: this.state.currentCounty,
             })
         })
         .then(res => res.json())
-        .then(response => {
-            var rawData = response['rawData'];
-            var weatherStationData = response['weatherStationData']
-            weatherStationData = JSON.parse(weatherStationData)
-            weatherStationData = weatherStationData['results'];
+        .then(resData => {
+            var scenes = resData['scenes'];
 
-            this.setState({
-                weatherStationData: weatherStationData,
-            })
-
-            var parsedData = JSON.parse(rawData);
+            // var columnsToDisplay = ['startTime', 'endTime', 'acquisitionDate', 'cloudCover', 'displayId', 'entityId', 'latitude', 'longitude']
 
             var cols = [];
             var rows = [];
-        
-            for(const key in parsedData){
+
+            for(const col of this.state.features){
                 var newColEntry = {
-                    label: key,
-                    field: key,
+                    label: col,
+                    field: col,
                     sort: 'asc',
                     width: 150,
                 }
                 cols.push(newColEntry);
             }
 
-            for(var i=0; i<Object.keys(parsedData['DATE']).length; i++){      
+            for(var currentScene in scenes){
                 var newRowEntry = {}
-                for(const key in parsedData){
-                    var val = parsedData[key][i];
-                    if (val == null){
-                        val = ''
+                for(var col of this.state.features){
+                    var val = scenes[currentScene][col];
+                    if(val == null){
+                        if(col == 'latitude'){
+                            val = lat
+                        }
+                        else if(col == 'longitude'){
+                            val = lon
+                        }
+                        else{
+                            val = ''
+                        }
                     }
-                    newRowEntry[key] = val
+                    // if(val == null){
+                    //     val = ''
+                    // }
+                    newRowEntry[col] = val
                 }
                 rows.push(newRowEntry);
             }
@@ -180,8 +180,16 @@ class WeatherDataCollection extends React.Component{
             }
 
             this.setState({
-                data: data,
+                data: data
             })
+
+        })
+    }
+
+    handleViewChange(event){
+        console.log('changed to: '+event.target.innerHTML);
+        this.setState({
+            currentView: event.target.innerHTML,
         })
     }
 
@@ -201,62 +209,6 @@ class WeatherDataCollection extends React.Component{
         })
     }
 
-    handleViewChange(event){
-        // console.log('changed to: '+event.target.innerHTML);
-        this.setState({
-            currentView: event.target.innerHTML,
-        })
-    }
-
-    handleWeatherStationChange(newWeatherStation){
-        this.setState({
-            currentWeatherStation: newWeatherStation,
-        })
-    }
-
-    onCountyMouseover(event){
-        event.target.setStyle({
-            fillOpacity: 0.9,
-        });
-    }
-
-    onCountyMouseout(event){
-        event.target.setStyle({
-            fillOpacity: 0.3,
-        });
-    }
-
-    onEachCounty(county, layer){
-        var countyName = county.properties.name;
-        layer.bindPopup(countyName);
-
-        layer.on({
-            mouseover: this.onCountyMouseover,
-            mouseout: this.onCountyMouseout,
-        })
-    }
-
-    getFeatureData(feature){
-        var data = [];
-        var temp = {};
-        for(var row of this.state.data['rows']){
-            if(!(row['STATION'] in temp)){
-                temp[row['STATION']] = {
-                    'x': [],
-                    'y': [],
-                    type: 'line',
-                    name: row['STATION'],
-                }
-            }
-            temp[row['STATION']]['x'].push(row['DATE']);
-            temp[row['STATION']]['y'].push(row[feature]);
-        }
-        for(var station of Object.keys(temp)){
-            data.push(temp[station]);
-        }
-        return data;
-    }
-
     handleStartDateChange(newStartDate){
         this.setState({
             startDate: newStartDate,
@@ -268,6 +220,7 @@ class WeatherDataCollection extends React.Component{
             endDate: newEndDate,
         })
     }
+
 
     render(){
         delete L.Icon.Default.prototype._getIconUrl;
@@ -284,20 +237,12 @@ class WeatherDataCollection extends React.Component{
             fillOpacity: 0.3,
         }
 
-        var tavg = null;
-        var tmin = null;
-        var tmax = null;
-        if(this.state.data != null){
-            tavg = this.getFeatureData('TAVG');
-            tmin = this.getFeatureData('TMIN');
-            tmax = this.getFeatureData('TMAX');
-        }
-
         return(
             <div className="jumbotron" style={{margin:'10px 0 50px 0', paddingTop:'20px', overflow:'auto'}}>
+
                 <FilterDiv 
-                    pageType='dataCollection'
-                    dataType='weather'
+                    pageType='dataAnalysis'
+                    dataType='satellite'
                     getData={this.getData}
                     changeCounty={this.changeCounty}
                     toggleFilterDiv={this.toggleFilterDiv}
@@ -306,52 +251,34 @@ class WeatherDataCollection extends React.Component{
                     handleStartDateChange={this.handleStartDateChange}
                     handleEndDateChange={this.handleEndDateChange}
                 />
+
                 <p>
                     <strong>Data for: </strong>{this.state.currentCounty} County ({this.state.startDate} to {this.state.endDate})
                 </p>
+                <hr/>
                 <div>
                     {
-                        this.state.currentView === 'Table View'?
+                        this.state.currentView === 'Statistic View'?
                         <div>
-                            {
-                                !this.state.data?
-                                <div>Getting data...</div>
-                                :
-                                <div>
-                                    <MDBDataTable responsive
-                                    striped
-                                    bordered
-                                    data={this.state.data}
-                                    />
-                                    <br/>
-                                    <hr/>
+                            <h3>Important statistics:</h3>
+                            <br/>
+                            <div style={{display:'flex', flexWrap:'wrap'}}>
+                                {
+                                    Object.keys(this.state.summaryData).map(
+                                        key => {
+                                            return (
+                                                <div key={key} style={{margin:'6px 24px 6px 0'}}>
+                                                    <strong>{key}: </strong>{this.state.summaryData[key]}
+                                                </div>
+                                            )
+                                        }
+                                    )
+                                }
+                            </div>
+                            <hr/>
 
-                                    <h4>Graphs</h4>
-                                    <br/>
-                                    <Plot
-                                        style = {{height:'400px'}}
-                                        data = {tavg}
-                                        layout = {{showlegend: true, title:'TAVG over time'}}
-                                        config = {{responsive:true }}
-                                    />
-                                    <br/>
-                                    <Plot
-                                        style = {{ height:'400px'}}
-                                        data = {tmin}
-                                        layout = {{showlegend:true, title: 'TMIN over time' }}
-                                        config = {{responsive:true }}
-                                    />
-                                    <br/>
-                                    <Plot
-                                        style = {{height:'400px'}}
-                                        data = {tmax}
-                                        layout = {{showlegend:true, title:'TMAX over time' }}
-                                        config = {{responsive:true }}
-                                    />
-
-                                </div>
-                                
-                            }
+                            <img src='https://www.epa.gov/sites/production/files/styles/large/public/2016-07/wildfires-figure3-2016.png' alt='fire' width='70%' style={{margin:'20px 0'}}/>
+                            <img src='https://eoimages.gsfc.nasa.gov/images/imagerecords/145000/145498/amazon_tamo_2012-2019_count_lrg.png' alt='fire2' width='100%' style={{margin:'20px 0'}} />
                         </div>
                         :
                         <div>
@@ -398,58 +325,40 @@ class WeatherDataCollection extends React.Component{
                                     </LayersControl.Overlay>
 
                                 </LayersControl>
-
-
-                                <MarkerClusterGroup>
-                                    {
-                                        this.state.weatherStationData == null?
-                                        <div>Waiting for data to load...</div>
-                                        :
-                                        this.state.weatherStationData.map(
-                                            marker => {
-                                                return (
-                                                    <Marker position={[marker['latitude'], marker['longitude']]} key={marker['id']} onclick={() => this.handleWeatherStationChange(marker)}>
-                                                        <Popup>
-                                                            <p>ID: {marker['id']}</p>
-                                                            <p>Lat: {marker['latitude']}</p>
-                                                            <p>Lon: {marker['longitude']}</p>
-                                                        </Popup>
-                                                    </Marker>
-                                                )
-                                            }
-                                        )
-                                    }
-                                </MarkerClusterGroup>
                             </Map>
+
                             <div style={{float:'right', padding:'6px', width:'230px'}}>
                             {
-                                this.state.currentWeatherStation == null?
-                                <h3>Select a weather station for more info.</h3>
+                                this.state.summaryData == null?
+                                <p>Important statistics:</p>
                                 :
                                 <div>
-                                    <h3>Station info.</h3>
+                                    <p>Important statistics:</p>
                                     <hr/>
-                                    {
-                                        this.state.weatherStationFeatures.map(
-                                            feature => {
-                                                return (
-                                                <div key={feature}>
-                                                    <strong>{feature}: </strong>{this.state.currentWeatherStation[feature]}
-                                                    <br/>
-                                                    </div>
-                                                )
-                                            }
-                                        )
-                                    }
+                                    <div style={{display:'flex', flexWrap:'wrap'}}>
+                                        {
+                                            Object.keys(this.state.summaryData).map(
+                                                key => {
+                                                    return (
+                                                        <div key={key} style={{margin:'4px 0'}}>
+                                                            <strong>{key}: </strong>{this.state.summaryData[key]}
+                                                        </div>
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    </div>
                                 </div>
                             }
                             </div>
+
                         </div>
                     }
                 </div>
+
             </div>
         );
     }
 }
 
-export default WeatherDataCollection;
+export default SatelliteDataAnalysis;

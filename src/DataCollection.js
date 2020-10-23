@@ -1,5 +1,5 @@
 import React from 'react';
-import MyNavbar from './Components/MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar';
 
 import WeatherDataCollection from './DataCollectionComponents/WeatherDataCollection';
 import SatelliteDataCollection from './DataCollectionComponents/SatelliteDataCollection';
@@ -12,10 +12,9 @@ class DataCollection extends React.Component{
         super(props);
 
         this.state = {
-            currentCounty: null,
             lat: 37.334665328,
             lon: -121.875329832,
-            currentView: 'Weather',
+            currentMode: 'Weather',
             weatherComponent: null,
             satelliteComponent: null,
             fireHistoryComponent: null,
@@ -23,7 +22,7 @@ class DataCollection extends React.Component{
         }
 
         this.getCoordinates = this.getCoordinates.bind(this);
-        this.handleViewChange = this.handleViewChange.bind(this);
+        this.handleModeChange = this.handleModeChange.bind(this);
 
     }
 
@@ -50,9 +49,9 @@ class DataCollection extends React.Component{
     }
 
 
-    handleViewChange(event){
+    handleModeChange(event){
         this.setState({
-            currentView: event.target.innerHTML
+            currentMode: event.target.innerHTML
         });
 
     }
@@ -88,6 +87,7 @@ class DataCollection extends React.Component{
                 <MyNavbar/>
 
                 <div style={{marginLeft:'15rem'}}>
+
                     <div style={{position:'fixed', backgroundColor:'#f8f9fa', height:"72px", width:"100%",  borderLeft:'1px solid #d9dadb', borderBottom:"1px solid #d9dadb", paddingLeft:"20px"}}>
                         <h1 className='mt-2'>Data Collection</h1>
                     </div>
@@ -96,58 +96,53 @@ class DataCollection extends React.Component{
                         
                         <div style={{margin:'20px 0 0 20px', width:'calc(100vw - 280px)'}}>
 
-                            {/* <div style={{margin:'0 0 20px 0'}}>
-                                <h4>Your location: {this.state.latitude}, {this.state.longitude}</h4>
-                                <p style={{color:'gray'}}>We use your browser location to provide the most accurate information.</p>
-                            </div> */}
-
                             <div className="btn-group" style={{width:"100%", display:'flex', justifyContent:'center', flexWrap:'wrap'}}>
                                 {
-                                    this.state.currentView === 'Weather'?
+                                    this.state.currentMode === 'Weather'?
                                     <button style={styles.buttonGroupButtonActive}>Weather</button>
                                     :
-                                    <button style={styles.buttonGroupButton} onClick={this.handleViewChange}>Weather</button>
+                                    <button style={styles.buttonGroupButton} onClick={this.handleModeChange}>Weather</button>
                                 }
                                 {
-                                    this.state.currentView === 'Fire History'?
+                                    this.state.currentMode === 'Fire History'?
                                     <button style={styles.buttonGroupButtonActive}>Fire History</button>
                                     :
-                                    <button style={styles.buttonGroupButton} onClick={this.handleViewChange}>Fire History</button>
+                                    <button style={styles.buttonGroupButton} onClick={this.handleModeChange}>Fire History</button>
                                 }
                                 {
-                                    this.state.currentView === 'Land Cover'?
+                                    this.state.currentMode === 'Land Cover'?
                                     <button style={styles.buttonGroupButtonActive}>Land Cover</button>
                                     :
-                                    <button style={styles.buttonGroupButton} onClick={this.handleViewChange}>Land Cover</button>
+                                    <button style={styles.buttonGroupButton} onClick={this.handleModeChange}>Land Cover</button>
                                 }
                                 {
-                                    this.state.currentView === 'Satellite'?
+                                    this.state.currentMode === 'Satellite'?
                                     <button style={styles.buttonGroupButtonActive}>Satellite</button>
                                     :
-                                    <button style={styles.buttonGroupButton} onClick={this.handleViewChange}>Satellite</button>
+                                    <button style={styles.buttonGroupButton} onClick={this.handleModeChange}>Satellite</button>
                                 }
                             </div>
 
                             {
-                                this.state.currentView === 'Weather'?
+                                this.state.currentMode === 'Weather'?
                                 this.state.weatherComponent
                                 :
                                 <div></div>
                             }
                             {
-                                this.state.currentView === 'Satellite'?
+                                this.state.currentMode === 'Satellite'?
                                 this.state.satelliteComponent
                                 :
                                 <div></div>
                             }
                             {
-                                this.state.currentView === 'Fire History'?
+                                this.state.currentMode === 'Fire History'?
                                 this.state.fireHistoryComponent
                                 :
                                 <div></div>
                             }
                             {
-                                this.state.currentView === 'Land Cover'?
+                                this.state.currentMode === 'Land Cover'?
                                 this.state.landCoverComponent
                                 :
                                 <div></div>

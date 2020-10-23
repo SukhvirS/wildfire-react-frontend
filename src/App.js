@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './css/App.css';
 
 import {BrowserRouter, Route} from 'react-router-dom';
 
@@ -10,7 +10,7 @@ import Detection from './Detection';
 import Risk from './Risk';
 import Progression from './Progression';
 import ModelEvaluation from './ModelEvaluation';
-import Flask from'./Flask-example';
+// import Flask from'./Flask-example';
 
 function App() {
   return (
@@ -22,7 +22,7 @@ function App() {
       <Route path="/risk" component={Risk}></Route>
       <Route path="/progression" component={Progression}></Route>
       <Route path="/model-evaluation" component={ModelEvaluation}></Route>
-      <Route path='/flask' component={Flask}></Route>
+      {/* <Route path='/flask' component={Flask}></Route> */}
     </BrowserRouter>
   );
 }

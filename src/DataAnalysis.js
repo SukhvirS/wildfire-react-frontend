@@ -1,7 +1,10 @@
 import React from 'react';
-import MyNavbar from './Components/MyNavbar/MyNavbar';
-import {Map, GeoJSON, TileLayer, LayersControl} from 'react-leaflet';
-import counties from './counties.json';
+import MyNavbar from './Components/MyNavbar';
+
+import WeatherDataAnalysis from './DataAnalysisComponents/WeatherDataAnalysis';
+import FireHistoryDataAnalysis from './DataAnalysisComponents/FireHistoryDataAnalysis';
+import LandCoverDataAnalysis from './DataAnalysisComponents/LandCoverDataAnalysis';
+import SatelliteDataAnalysis from './DataAnalysisComponents/SatelliteDataAnalysis';
 
 class DataAnalysis extends React.Component{
 
@@ -9,61 +12,49 @@ class DataAnalysis extends React.Component{
         super(props);
 
         this.state = {
-            currentCounty: null,
-            currentView: 'Weather'
+            lat: 37.334665328,
+            lon: -121.875329832,
+            currentMode: 'Weather',
+            weatherComponent: null,
+            satelliteComponent: null,
+            fireHistoryComponent: null,
+            landCoverComponent: null,
         }
 
-        this.onCountyClick = this.onCountyClick.bind(this);
-        this.onEachCounty = this.onEachCounty.bind(this);
-        this.onCountyMouseover = this.onCountyMouseover.bind(this);
-        this.onCountyMouseout = this.onCountyMouseout.bind(this);
-        this.handleViewChange = this.handleViewChange.bind(this);
+        this.getCoordinates = this.getCoordinates.bind(this);
+        this.handleModeChange = this.handleModeChange.bind(this);
     }
 
-    onCountyClick(event){
-        console.log(event.target.feature.properties.name + ' clicked.');
+    componentDidMount(){
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(this.getCoordinates);
+        }
+        else{
+            alert("Geolocation is not supported by this browser.");
+        }
         this.setState({
-            currentCounty: event.target.feature.properties.name,
+            weatherComponent: <WeatherDataAnalysis lat={this.state.lat} lon={this.state.lon} />,
+            fireHistoryComponent: <FireHistoryDataAnalysis lat={this.state.lat} lon={this.state.lon} />,
+            landCoverComponent: <LandCoverDataAnalysis lat={this.state.lat} lon={this.state.lon} />,
+            satelliteComponent: <SatelliteDataAnalysis lat={this.state.lat} lon={this.state.lon} />
         })
     }
 
-    onCountyMouseover(event){
-        event.target.setStyle({
-            fillOpacity: 0.9,
-        });
-    }
-
-    onCountyMouseout(event){
-        event.target.setStyle({
-            fillOpacity: 0.3,
-        });
-    }
-
-    onEachCounty(county, layer){
-        var countyName = county.properties.name;
-        layer.bindPopup(countyName);
-
-        layer.on({
-            click: this.onCountyClick,
-            mouseover: this.onCountyMouseover,
-            mouseout: this.onCountyMouseout,
+    getCoordinates(position){
+        this.setState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
         })
     }
 
-    handleViewChange(event){
+    handleModeChange(event){
         this.setState({
-            currentView: event.target.innerHTML
+            currentMode: event.target.innerHTML
         });
-        console.log(document.getElementsByClassName('leaflet-control-layers')[0]);
     }
+
     render(){
         var position = [37.334665328, -121.875329832];
-        var countyStyle = {
-            color: '#4a83ec',
-            weight: 1,
-            fillColor: "#AED7FF",
-            fillOpacity: 0.3,
-        }
 
         var styles = {
             buttonGroupButton: {
@@ -102,108 +93,61 @@ class DataAnalysis extends React.Component{
                         <h1 className='mt-2'>Data Analysis</h1>
                     </div>
 
-                    <div style={{wdith:'60vw', position:'absolute', marginTop:'72px', zIndex:'-100'}}>
+                    <div style={{width:'60vw', position:'absolute', marginTop:'72px', zIndex:'-100'}}>
 
-                        <div style={{width:'100%'}}>
-
-                            <div style={{width:'calc(100vw - 500px)', float:'left'}}>
-
-                                <div style={{height:'70px', display:'flex', justifyContent:'center', padding:'12px 0 0 0'}}>
-                                    {
-                                        this.state.currentView === 'Weather'?
-                                        <button style={styles.buttonGroupButtonActive}>Weather</button>
-                                        :
-                                        <button style={styles.buttonGroupButton} onClick={this.handleViewChange}>Weather</button>
-                                    }
-                                    {
-                                        this.state.currentView === 'Historical'?
-                                        <button style={styles.buttonGroupButtonActive}>Historical</button>
-                                        :
-                                        <button style={styles.buttonGroupButton} onClick={this.handleViewChange}>Historical</button>
-                                    }
-                                    {
-                                        this.state.currentView === 'Vegetation'?
-                                        <button style={styles.buttonGroupButtonActive}>Vegetation</button>
-                                        :
-                                        <button style={styles.buttonGroupButton} onClick={this.handleViewChange}>Vegetation</button>
-                                    }
-                                    {
-                                        this.state.currentView === 'Satellite'?
-                                        <button style={styles.buttonGroupButtonActive}>Satellite</button>
-                                        :
-                                        <button style={styles.buttonGroupButton} onClick={this.handleViewChange}>Satellite</button>
-                                    }
-                                </div>
-
-                                <Map style={{height:'calc(100vh - 142px)', width:'calc(100vw - 500px)', float:'left'}} zoom={8} center={position}>
-
-                                    <LayersControl position="topright">
-
-                                        <LayersControl.BaseLayer name="Topology" checked>
-                                            <TileLayer
-                                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}.png"
-                                            />
-                                        </LayersControl.BaseLayer>
-
-                                        <LayersControl.BaseLayer name="Street">
-                                            <TileLayer
-                                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                            />
-                                        </LayersControl.BaseLayer>
-
-                                        <LayersControl.BaseLayer name="Satellite">
-                                            <TileLayer
-                                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png"
-                                            />
-                                        </LayersControl.BaseLayer>
-
-                                        <LayersControl.BaseLayer name="Terrain">
-                                            <TileLayer
-                                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}.png"
-                                            />
-                                        </LayersControl.BaseLayer>
-
-                                        <LayersControl.BaseLayer name="Dark">
-                                            <TileLayer
-                                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                            url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
-                                            />
-                                        </LayersControl.BaseLayer>
-
-                                        <LayersControl.Overlay name="Show Counties" >
-                                            <GeoJSON data={counties.features}  style={countyStyle} onEachFeature={this.onEachCounty}/>
-                                        </LayersControl.Overlay>
-
-                                    </LayersControl>
-                                </Map>
+                        <div style={{margin:'20px 0 0 20px', width:'calc(100vw - 280px)'}}>
+                            <div className="btn-group" style={{width:"100%", display:'flex', justifyContent:'center', flexWrap:'wrap'}}>
+                                {
+                                    this.state.currentMode === 'Weather'?
+                                    <button style={styles.buttonGroupButtonActive}>Weather</button>
+                                    :
+                                    <button style={styles.buttonGroupButton} onClick={this.handleModeChange}>Weather</button>
+                                }
+                                {
+                                    this.state.currentMode === 'Fire History'?
+                                    <button style={styles.buttonGroupButtonActive}>Fire History</button>
+                                    :
+                                    <button style={styles.buttonGroupButton} onClick={this.handleModeChange}>Fire History</button>
+                                }
+                                {
+                                    this.state.currentMode === 'Land Cover'?
+                                    <button style={styles.buttonGroupButtonActive}>Land Cover</button>
+                                    :
+                                    <button style={styles.buttonGroupButton} onClick={this.handleModeChange}>Land Cover</button>
+                                }
+                                {
+                                    this.state.currentMode === 'Satellite'?
+                                    <button style={styles.buttonGroupButtonActive}>Satellite</button>
+                                    :
+                                    <button style={styles.buttonGroupButton} onClick={this.handleModeChange}>Satellite</button>
+                                }
                             </div>
 
-                            <div style={{width:'260px', float:'right', borderLeft:'1px solid #d9dadb'}}>
-                                <div style={{marginTop:'16px'}}>
-                                    <form onSubmit={this.handleCitySearch}>
-                                        <div className="col-lg-10 mb-3">
-                                            <div className="input-group" style={{width:'226px'}}>
-                                                <input type="text" className="form-control rounded-0" id="citySearchInput" placeholder="City Name" required />
-                                                <div className="input-group-prepend">
-                                                    <input type="submit" value="Search" className="btn btn-primary btn-sm rounded-0" id="inputGroupPrepend2" style={{backgroundColor:'#1580fb'}}/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <hr style={{margin:'16px'}}/>
+                            {
+                                this.state.currentMode === 'Weather'?
+                                this.state.weatherComponent
+                                :
+                                <div></div>
+                            }
+                            {
+                                this.state.currentMode === 'Satellite'?
+                                this.state.satelliteComponent
+                                :
+                                <div></div>
+                            }
+                            {
+                                this.state.currentMode === 'Fire History'?
+                                this.state.fireHistoryComponent
+                                :
+                                <div></div>
+                            }
+                            {
+                                this.state.currentMode === 'Land Cover'?
+                                this.state.landCoverComponent
+                                :
+                                <div></div>
+                            }
 
-                                <div style={{height:'100%', overflow:'auto', margin:'16px'}}>
-                                    <h4>Select date:</h4>
-                                    <div >
-                                        <input type='date' className='input-group' style={{padding:'10px'}}/>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

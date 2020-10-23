@@ -2,19 +2,60 @@ import React from 'react';
 import CountySelector from './CountySelector';
 
 class FilterDiv extends React.Component{
+
+    constructor(props){
+        super(props);
+
+        this.changeStartDate = this.changeStartDate.bind(this);
+        this.changeEndDate = this.changeEndDate.bind(this);
+    }
+
+    changeStartDate(event){
+        this.props.handleStartDateChange(event.target.value);
+    }
+
+    changeEndDate(event){
+        this.props.handleEndDateChange(event.target.value);
+    }
+    
     render(){
         return(
             <div>
                 <div style={{width:'100%', height:'50px'}}>
                     <h4 style={{padding:'0 10px 0 0', float:'left', padding:'12px 0 0 0'}}>
-                        Fire History
+                        {
+                            this.props.dataType === 'weather'?
+                            'Weather'
+                            :
+                            this.props.dataType === 'fireHistory'?
+                            'Fire History'
+                            :
+                            this.props.dataType === 'landCover'?
+                            'Land Cover'
+                            :
+                            this.props.dataType === 'satellite'?
+                            'Satellite'
+                            :
+                            <div></div>
+                        }
                     </h4>
+
                     {
-                        this.props.currentView === 'Table View'?
-                        <button className='btn btn-success' onClick={this.props.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Map View</button>
+                        this.props.pageType === 'dataCollection'?
+                            this.props.currentView === 'Table View'?
+                            <button className='btn btn-success' onClick={this.props.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Map View</button>
+                            :
+                            <button className='btn btn-success' onClick={this.props.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Table View</button>
                         :
-                        <button className='btn btn-success' onClick={this.props.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Table View</button>
+                        this.props.pageType === 'dataAnalysis'?
+                            this.props.currentView === 'Statistic View'?
+                            <button className='btn btn-success' onClick={this.props.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Map View</button>
+                            :
+                            <button className='btn btn-success' onClick={this.props.handleViewChange} style={{float:'right', margin:'0 0 0 10px'}} >Statistic View</button>
+                        :
+                        <div></div>
                     }
+
                     <button className='btn btn-dark' style={{float:'right'}} onClick={this.props.toggleFilterDiv}>
                         Filter 
                         &nbsp;
@@ -24,8 +65,8 @@ class FilterDiv extends React.Component{
                     </button>
                 </div>
                 <hr/>
+
                 <div style={{display:'none', height:'auto'}} id='filterDiv'>
-                    <h1>{this.props.dataType}</h1>
                     <div style={{width:'100%'}}>
                         <div style={{float:'left'}}>
                             Source: &nbsp;&nbsp;
@@ -55,9 +96,9 @@ class FilterDiv extends React.Component{
                         </div>
                         <div style={{float:'right'}}>
                             From:&nbsp;
-                            <input type='date' style={{padding:'10px'}} id="startDateInput"/>
+                            <input type='date' style={{padding:'10px'}} id="startDateInput" onChange={this.changeStartDate}/>
                             &nbsp; - &nbsp;
-                            <input type='date' style={{padding:'10px'}} id='endDateInput'/>
+                            <input type='date' style={{padding:'10px'}} id='endDateInput' onChange={this.changeEndDate}/>
                             &nbsp;&nbsp;&nbsp;&nbsp;
                         </div>
                         <br/>

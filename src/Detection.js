@@ -3,7 +3,7 @@ import {Map, GeoJSON, TileLayer, LayersControl, FeatureGroup, Marker, Popup} fro
 import 'leaflet/dist/leaflet.css';
 import counties from './counties.json';
 import L from 'leaflet';
-import MyNavbar from './Components/MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar';
 
 class Detection extends React.Component{
 
@@ -207,11 +207,11 @@ class Detection extends React.Component{
         }
 
         delete L.Icon.Default.prototype._getIconUrl;
-        // L.Icon.Default.mergeOptions({
-        //     iconRetinaUrl: require('./images/fire.png'),
-        //     iconUrl: require('./images/fire.png'),
-        //     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-        // });
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: require('./images/fire.png'),
+            iconUrl: require('./images/fire.png'),
+            shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+        });
 
         var fireMarkers = this.makeFireMarkers(fires);
 

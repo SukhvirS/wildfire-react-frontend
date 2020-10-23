@@ -1,8 +1,8 @@
 import React from 'react';
-import {Map, GeoJSON, TileLayer, LayersControl} from 'react-leaflet';
+import {Map, GeoJSON, TileLayer, LayersControl, FeatureGroup} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import counties from './counties.json';
-import MyNavbar from './Components/MyNavbar/MyNavbar';
+import MyNavbar from './Components/MyNavbar';
 
 class Risk extends React.Component{
 
@@ -118,7 +118,7 @@ class Risk extends React.Component{
                                         />
                                     </LayersControl.BaseLayer>
 
-                                    <LayersControl.Overlay name="Show Counties" checked>
+                                    <LayersControl.Overlay name="Show Counties">
                                         <GeoJSON data={counties.features}  style={countyStyle} onEachFeature={this.onEachCounty}/>
                                     </LayersControl.Overlay>
 
@@ -140,6 +140,7 @@ class Risk extends React.Component{
                                         </FeatureGroup>
                                     </LayersControl.Overlay> */}
                                 </LayersControl>
+
                             </Map>
 
                             <div style={{width:'260px', float:'right', borderLeft:'1px solid #d9dadb'}}>
