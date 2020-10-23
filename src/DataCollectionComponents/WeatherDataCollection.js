@@ -128,7 +128,7 @@ class WeatherDataCollection extends React.Component{
             data: null,
         })
 
-        fetch(devUrl + '/api/getNOAAdata', {
+        fetch(prodUrl + '/api/getNOAAdata', {
             method:'POST',
             body: JSON.stringify({
                 startDate: start,
